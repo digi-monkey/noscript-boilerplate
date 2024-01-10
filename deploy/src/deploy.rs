@@ -26,11 +26,11 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
 
-    let id = "Japanese-Lang";
+    let id: &str = "Mandarin-Lang";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("世界の日本語".to_string()),
-        description: Some("a noscript that filter japanese text only".to_string()),
+        title: Some("中文广场".to_string()),
+        description: Some("a noscript that filter Mandarin text only".to_string()),
         version: Some("0.1.0".to_string()),
         ..Default::default()
     };
@@ -38,7 +38,7 @@ async fn main() -> Result<()> {
     let d_tags = create_d_tag(Some(id.to_string()));
     let filter_tags = create_filter_tag(filter, FilterOptMode::global);
     let noscript_tags = create_noscript_payload_tag(noscript_payload);
-
+    
     let event: Event = EventBuilder::new(
         Kind::Custom(NOSCRIPT_KIND.try_into().unwrap()),
         content,
