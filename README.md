@@ -30,11 +30,14 @@ check browser `http://localhost:8080/` see console
 
 ### Deploy Noscript
 
-create a `.secret` file in root folder and paste your Nostr private key
+create a `config.toml` file inside `deploy` folder and paste your Nostr private key
 
 ```
+cd deploy
+cp example-config.toml config.toml
+
 // generate and sign event
-cd deploy && cargo run --bin deploy
+cargo run --bin deploy
 ```
 
 ## What is Noscript?
