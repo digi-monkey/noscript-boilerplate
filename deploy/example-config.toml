@@ -1,0 +1,11 @@
+# relay list to deploy your noscript
+relays = [
+	"ws://localhost:8080",
+	"wss://relay.nostr.band",
+	"wss://relay.nostr.bg",
+	"wss://relay.snort.social",
+	"wss://nos.lol",
+]
+
+# your nostr private key used to deploy the noscript event
+privkey = ""

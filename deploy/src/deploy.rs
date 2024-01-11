@@ -1,4 +1,5 @@
 mod types;
+mod conf;
 
 use types::NOSCRIPT_KIND;
 
@@ -8,17 +9,17 @@ use std::{fs::File, io::Read};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut file = File::open("../.secret")?;
-    let mut key = String::new();
-    file.read_to_string(&mut key).unwrap();
-    let my_keys = Keys::from_sk_str(key.as_str())?;
-
+    let conf = conf::get_config();
+    let my_keys = Keys::from_sk_str(&conf.privkey.as_str())?;
     let pubkey: String = my_keys.public_key().to_string();
     println!("PubKey: {}", pubkey);
+    let relays = conf.relays;
 
     let client = Client::new(&my_keys);
-    client.add_relay("ws://localhost:8080").await?;
-
+    for relay in relays{
+        println!("add relay: {}", relay);
+        client.add_relay(relay).await?;
+    }
     client.connect().await;
 
     // Send custom event
@@ -116,7 +117,10 @@ pub fn create_filter_tag(filter: Filter, id: Option<String>, description: Option
     }
 
     if id.is_some() {
-        let tag = Tag::Generic(TagKind::D, vec![id.unwrap()]);
+        let d = id.unwrap();
+        let d2 = d.clone();
+        let tag = Tag::Generic(TagKind::D, vec![d]);
+        println!("noscript #d: {:#?}", d2);
         tags.push(tag);
     }
 

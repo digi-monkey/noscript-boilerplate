@@ -9,3 +9,5 @@ event.js
 *event.json
 
 .secret
+
+config.toml
