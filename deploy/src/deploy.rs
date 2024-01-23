@@ -24,13 +24,13 @@ async fn main() -> Result<()> {
 
     // Send custom event
     let content = read_wasm();
-    let filter: Filter = Filter::new().kind(Kind::TextNote);
+    let filter: Filter = Filter::new().kind(Kind::LongFormTextNote);
 
-    let id = "Japanese-Lang";
+    let id = "global-article";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("世界の日本語".to_string()),
-        description: Some("a noscript that filter japanese text only".to_string()),
+        title: Some("articles".to_string()),
+        description: Some("a noscript that filter global long-form article with at least 600 words".to_string()),
         version: Some("0.1.0".to_string()),
         ..Default::default()
     };
