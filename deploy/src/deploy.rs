@@ -26,11 +26,11 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
 
-    let id = "Japanese-Lang";
+    let id = "media-note";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("世界の日本語".to_string()),
-        description: Some("a noscript that filter japanese text only".to_string()),
+        title: Some("Media".to_string()),
+        description: Some("a noscript that filter media note only".to_string()),
         version: Some("0.1.0".to_string()),
         ..Default::default()
     };
