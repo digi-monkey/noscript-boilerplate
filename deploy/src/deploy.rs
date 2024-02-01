@@ -26,17 +26,18 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
 
-    let id = "media-note";
+    let id = "follow-media";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("Media".to_string()),
-        description: Some("a noscript that filter media note only".to_string()),
+        title: Some("Follow Media".to_string()),
+        description: Some("a noscript that filter media note from your followings".to_string()),
         version: Some("0.1.0".to_string()),
+        source_code: Some("https://github.com/digi-monkey/noscript-boilerplate/tree/follow-media".to_string()),
         ..Default::default()
     };
 
     let d_tags = create_d_tag(Some(id.to_string()));
-    let filter_tags = create_filter_tag(filter, FilterOptMode::global);
+    let filter_tags = create_filter_tag(filter, FilterOptMode::follow);
     let noscript_tags = create_noscript_payload_tag(noscript_payload);
 
     let event: Event = EventBuilder::new(
