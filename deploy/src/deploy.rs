@@ -1,7 +1,7 @@
 mod types;
 mod conf;
 
-use types::NOSCRIPT_KIND;
+use types::{NoscriptPayload, NOSCRIPT_KIND};
 
 use base64::{engine::general_purpose, Engine};
 use nostr_sdk::prelude::*;
@@ -25,14 +25,23 @@ async fn main() -> Result<()> {
     // Send custom event
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
-    let id = "Japanese-Lang";
-    let description = "a noscript that filter japanese text only";
-    let filter_tags = create_filter_tag(filter, Some(id.to_string()), Some(description.to_string()));
     
+    let id = "Japanese-Lang";
+
+    let noscript_payload = NoscriptPayload {
+        title: Some("世界の日本語".to_string()),
+        description: Some("a noscript that filter japanese text only".to_string()),
+        version: Some("0.1.0".to_string()),
+        ..Default::default() 
+    };
+
+    let filter_tags = create_filter_tag(filter, Some(id.to_string()));
+    let noscript_tags = create_noscript_payload_tag(noscript_payload);
+
     let event: Event = EventBuilder::new(
         Kind::Custom(NOSCRIPT_KIND.try_into().unwrap()),
         content,
-        filter_tags,
+        vec![filter_tags, noscript_tags].concat(),
     )
     .to_event(&my_keys)?;
     println!("{:#?}", event.id);
@@ -56,7 +65,62 @@ pub fn read_wasm() -> String {
     return wasm_base64;
 }
 
-pub fn create_filter_tag(filter: Filter, id: Option<String>, description: Option<String>) -> Vec<Tag> {
+pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag>{
+    let mut tags: Vec<Tag> = vec![];
+
+    if payload.title.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("title"),
+            vec![payload.title.unwrap()],
+        );
+        tags.push(tag);
+    }
+
+    if payload.description.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("description"),
+            vec![payload.description.unwrap()],
+        );
+        tags.push(tag);
+    }
+
+    if payload.picture.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("picture"),
+            vec![payload.picture.unwrap()],
+        );
+        tags.push(tag);
+    }
+
+    if payload.version.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("version"),
+            vec![payload.version.unwrap()],
+        );
+        tags.push(tag);
+    }
+
+    if payload.source_code.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("source_code"),
+            vec![payload.source_code.unwrap()],
+        );
+        tags.push(tag);
+    }
+
+    if payload.published_at.is_some(){
+        let tag = Tag::Generic(
+            TagKind::from("published_at"),
+            vec![payload.published_at.unwrap().to_string()],
+        );
+        tags.push(tag);
+    }
+
+    return tags;
+
+}
+
+pub fn create_filter_tag(filter: Filter, id: Option<String>) -> Vec<Tag> {
     let mut tags: Vec<Tag> = vec![];
 
     if filter.ids.len() > 0 {
@@ -109,11 +173,6 @@ pub fn create_filter_tag(filter: Filter, id: Option<String>, description: Option
             );
             tags.push(tag);
         }
-    }
-
-    if description.is_some() {
-        let tag = Tag::Generic(TagKind::from("description"), vec![description.unwrap()]);
-        tags.push(tag);
     }
 
     if id.is_some() {

@@ -71,3 +71,14 @@ impl Event {
 }
 
 pub const NOSCRIPT_KIND: i32 = 32042;
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct NoscriptPayload {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub picture: Option<String>,
+    pub version: Option<String>,
+    pub source_codeversion: Option<String>,
+    pub source_code: Option<String>, // source code url
+    pub published_at: Option<i64>, // timestamp, seconds
+}
