@@ -1,7 +1,7 @@
-mod types;
 mod conf;
+mod types;
 
-use types::{NoscriptPayload, NOSCRIPT_KIND};
+use types::{FilterOptMode, NoscriptPayload, NOSCRIPT_KIND};
 
 use base64::{engine::general_purpose, Engine};
 use nostr_sdk::prelude::*;
@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
     let relays = conf.relays;
 
     let client = Client::new(&my_keys);
-    for relay in relays{
+    for relay in relays {
         println!("add relay: {}", relay);
         client.add_relay(relay).await?;
     }
@@ -25,23 +25,24 @@ async fn main() -> Result<()> {
     // Send custom event
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
-    
+
     let id = "Japanese-Lang";
 
     let noscript_payload = NoscriptPayload {
         title: Some("世界の日本語".to_string()),
         description: Some("a noscript that filter japanese text only".to_string()),
         version: Some("0.1.0".to_string()),
-        ..Default::default() 
+        ..Default::default()
     };
 
-    let filter_tags = create_filter_tag(filter, Some(id.to_string()));
+    let d_tags = create_d_tag(Some(id.to_string()));
+    let filter_tags = create_filter_tag(filter, FilterOptMode::global);
     let noscript_tags = create_noscript_payload_tag(noscript_payload);
 
     let event: Event = EventBuilder::new(
         Kind::Custom(NOSCRIPT_KIND.try_into().unwrap()),
         content,
-        vec![filter_tags, noscript_tags].concat(),
+        vec![filter_tags, noscript_tags, d_tags].concat(),
     )
     .to_event(&my_keys)?;
     println!("{:#?}", event.id);
@@ -65,18 +66,29 @@ pub fn read_wasm() -> String {
     return wasm_base64;
 }
 
-pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag>{
+pub fn create_d_tag(id: Option<String>)-> Vec<Tag>{
     let mut tags: Vec<Tag> = vec![];
 
-    if payload.title.is_some(){
-        let tag = Tag::Generic(
-            TagKind::from("title"),
-            vec![payload.title.unwrap()],
-        );
+    if id.is_some() {
+        let d = id.unwrap();
+        let d2 = d.clone();
+        let tag = Tag::Generic(TagKind::D, vec![d]);
+        println!("noscript #d: {:#?}", d2);
         tags.push(tag);
     }
 
-    if payload.description.is_some(){
+    return tags;
+}
+
+pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag> {
+    let mut tags: Vec<Tag> = vec![];
+
+    if payload.title.is_some() {
+        let tag = Tag::Generic(TagKind::from("title"), vec![payload.title.unwrap()]);
+        tags.push(tag);
+    }
+
+    if payload.description.is_some() {
         let tag = Tag::Generic(
             TagKind::from("description"),
             vec![payload.description.unwrap()],
@@ -84,23 +96,17 @@ pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag>{
         tags.push(tag);
     }
 
-    if payload.picture.is_some(){
-        let tag = Tag::Generic(
-            TagKind::from("picture"),
-            vec![payload.picture.unwrap()],
-        );
+    if payload.picture.is_some() {
+        let tag = Tag::Generic(TagKind::from("picture"), vec![payload.picture.unwrap()]);
         tags.push(tag);
     }
 
-    if payload.version.is_some(){
-        let tag = Tag::Generic(
-            TagKind::from("version"),
-            vec![payload.version.unwrap()],
-        );
+    if payload.version.is_some() {
+        let tag = Tag::Generic(TagKind::from("version"), vec![payload.version.unwrap()]);
         tags.push(tag);
     }
 
-    if payload.source_code.is_some(){
+    if payload.source_code.is_some() {
         let tag = Tag::Generic(
             TagKind::from("source_code"),
             vec![payload.source_code.unwrap()],
@@ -108,7 +114,7 @@ pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag>{
         tags.push(tag);
     }
 
-    if payload.published_at.is_some(){
+    if payload.published_at.is_some() {
         let tag = Tag::Generic(
             TagKind::from("published_at"),
             vec![payload.published_at.unwrap().to_string()],
@@ -117,10 +123,9 @@ pub fn create_noscript_payload_tag(payload: NoscriptPayload) -> Vec<Tag>{
     }
 
     return tags;
-
 }
 
-pub fn create_filter_tag(filter: Filter, id: Option<String>) -> Vec<Tag> {
+pub fn create_filter_tag(filter: Filter, mode: FilterOptMode) -> Vec<Tag> {
     let mut tags: Vec<Tag> = vec![];
 
     if filter.ids.len() > 0 {
@@ -175,13 +180,11 @@ pub fn create_filter_tag(filter: Filter, id: Option<String>) -> Vec<Tag> {
         }
     }
 
-    if id.is_some() {
-        let d = id.unwrap();
-        let d2 = d.clone();
-        let tag = Tag::Generic(TagKind::D, vec![d]);
-        println!("noscript #d: {:#?}", d2);
-        tags.push(tag);
-    }
+    let tag = Tag::Generic(
+        TagKind::from("mode"),
+        vec![mode.to_string()],
+    );
+    tags.push(tag);
 
     let tag = Tag::Generic(
         TagKind::from("noscript"),
