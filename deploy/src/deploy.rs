@@ -26,17 +26,18 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::LongFormTextNote);
 
-    let id = "global-article";
+    let id = "follow-article";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("articles".to_string()),
-        description: Some("a noscript that filter global long-form article with at least 600 words".to_string()),
+        title: Some("Follow Articles".to_string()),
+        description: Some("a noscript that filter long-form article with at least 600 words from your followings".to_string()),
         version: Some("0.1.0".to_string()),
+        source_code: Some("https://github.com/digi-monkey/noscript-boilerplate/tree/follow-article".to_string()),
         ..Default::default()
     };
 
     let d_tags = create_d_tag(Some(id.to_string()));
-    let filter_tags = create_filter_tag(filter, FilterOptMode::global);
+    let filter_tags = create_filter_tag(filter, FilterOptMode::follow);
     let noscript_tags = create_noscript_payload_tag(noscript_payload);
 
     let event: Event = EventBuilder::new(
