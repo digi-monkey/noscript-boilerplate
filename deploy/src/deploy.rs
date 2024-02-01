@@ -26,17 +26,17 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let filter: Filter = Filter::new().kind(Kind::TextNote);
 
-    let id = "Japanese-Lang";
+    let id = "Follow-Japanese-Lang";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("世界の日本語".to_string()),
-        description: Some("a noscript that filter japanese text only".to_string()),
+        title: Some("フォローしている日本語".to_string()),
+        description: Some("a noscript that filter japanese text from your followings".to_string()),
         version: Some("0.1.0".to_string()),
         ..Default::default()
     };
 
     let d_tags = create_d_tag(Some(id.to_string()));
-    let filter_tags = create_filter_tag(filter, FilterOptMode::global);
+    let filter_tags = create_filter_tag(filter, FilterOptMode::follow);
     let noscript_tags = create_noscript_payload_tag(noscript_payload);
 
     let event: Event = EventBuilder::new(
