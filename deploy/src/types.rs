@@ -80,5 +80,27 @@ pub struct NoscriptPayload {
     pub version: Option<String>,
     pub source_codeversion: Option<String>,
     pub source_code: Option<String>, // source code url
-    pub published_at: Option<i64>, // timestamp, seconds
+    pub published_at: Option<i64>,   // timestamp, seconds
+}
+
+pub enum FilterOptMode {
+    global = 0,
+    follow = 1,
+    trust_network = 2, // follow's follow without spam
+    sign_in_user = 3,
+    visiting_user = 4,
+    custom = 5,
+}
+
+impl FilterOptMode {
+    pub fn to_string(&self) -> String {
+        match *self {
+            FilterOptMode::global => "0".to_string(),
+            FilterOptMode::follow => "1".to_string(),
+            FilterOptMode::trust_network => "2".to_string(),
+            FilterOptMode::sign_in_user => "3".to_string(),
+            FilterOptMode::visiting_user => "4".to_string(),
+            FilterOptMode::custom => "5".to_string(),
+        }
+    }
 }
