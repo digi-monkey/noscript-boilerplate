@@ -48,8 +48,8 @@ async fn main() -> Result<()> {
 
     let noscript_payload = NoscriptPayload {
         title: Some("Talking Nostr".to_string()),
-        description: Some("a simple script that curate a list of selected people talking about nostr".to_string()),
-        version: Some("0.1.0".to_string()),
+        description: Some("a list of selected people talking about nostr".to_string()),
+        version: Some("0.1.1".to_string()),
         source_code: Some("https://github.com/digi-monkey/noscript-boilerplate/tree/talking-nostr".to_string()),
         ..Default::default()
     };
