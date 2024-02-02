@@ -5,7 +5,7 @@ use types::{FilterOptMode, NoscriptPayload, NOSCRIPT_KIND};
 
 use base64::{engine::general_purpose, Engine};
 use nostr_sdk::prelude::*;
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, str::FromStr};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -24,13 +24,31 @@ async fn main() -> Result<()> {
 
     // Send custom event
     let content = read_wasm();
-    let filter: Filter = Filter::new().kind(Kind::TextNote);
+    let pks = vec![
+        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52",
+        "9be0be0e64d38a29a9cec9a5c8ef5d873c2bfa5362a4b558da5ff69bc3cbb81e",
+        "de7ecd1e2976a6adb2ffa5f4db81a7d812c8bb6698aa00dcf1e76adb55efd645",
+        "3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd",
+        "76c71aae3a491f1d9eec47cba17e229cda4113a0bbb6e6ae1776d7643e29cafa",
+        "97c70a44366a6535c145b333f973ea86dfdc2d7a99da618c40c64705ad98e322",
+        "6b9da920c4b6ecbf2c12018a7a2d143b4dfdf9878c3beac69e39bb597841cc6e",
+        "3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d",
+        "45c41f21e1cf715fa6d9ca20b8e002a574db7bb49e96ee89834c66dac5446b7a",
+        "460c25e682fda7832b52d1f22d3d22b3176d972f60dcdc3212ed8c92ef85065c",
+    ];
+    let authors: Vec<XOnlyPublicKey> = pks
+        .iter()
+        .map(|pk| XOnlyPublicKey::from_str(pk).unwrap())
+        .collect();
+    let filter: Filter = Filter::new()
+        .kinds(vec![Kind::TextNote, Kind::LongFormTextNote])
+        .authors(authors);
 
-    let id = "Japanese-Lang";
+    let id = "talking-nostr";
 
     let noscript_payload = NoscriptPayload {
-        title: Some("世界の日本語".to_string()),
-        description: Some("a noscript that filter japanese text only".to_string()),
+        title: Some("Talking Nostr".to_string()),
+        description: Some("a simple script that curate a list of selected people talking about nostr".to_string()),
         version: Some("0.1.0".to_string()),
         ..Default::default()
     };
@@ -66,7 +84,7 @@ pub fn read_wasm() -> String {
     return wasm_base64;
 }
 
-pub fn create_d_tag(id: Option<String>)-> Vec<Tag>{
+pub fn create_d_tag(id: Option<String>) -> Vec<Tag> {
     let mut tags: Vec<Tag> = vec![];
 
     if id.is_some() {
@@ -180,10 +198,7 @@ pub fn create_filter_tag(filter: Filter, mode: FilterOptMode) -> Vec<Tag> {
         }
     }
 
-    let tag = Tag::Generic(
-        TagKind::from("mode"),
-        vec![mode.to_string()],
-    );
+    let tag = Tag::Generic(TagKind::from("mode"), vec![mode.to_string()]);
     tags.push(tag);
 
     let tag = Tag::Generic(
@@ -194,3 +209,39 @@ pub fn create_filter_tag(filter: Filter, mode: FilterOptMode) -> Vec<Tag> {
 
     return tags;
 }
+
+/*
+
+1
+:
+"fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52"
+2
+:
+"9be0be0e64d38a29a9cec9a5c8ef5d873c2bfa5362a4b558da5ff69bc3cbb81e"
+3
+:
+"de7ecd1e2976a6adb2ffa5f4db81a7d812c8bb6698aa00dcf1e76adb55efd645"
+4
+:
+"3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd"
+5
+:
+"76c71aae3a491f1d9eec47cba17e229cda4113a0bbb6e6ae1776d7643e29cafa"
+6
+:
+"97c70a44366a6535c145b333f973ea86dfdc2d7a99da618c40c64705ad98e322"
+7
+:
+"6b9da920c4b6ecbf2c12018a7a2d143b4dfdf9878c3beac69e39bb597841cc6e"
+8
+:
+"3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d"
+9
+:
+"45c41f21e1cf715fa6d9ca20b8e002a574db7bb49e96ee89834c66dac5446b7a"
+10
+:
+"460c25e682fda7832b52d1f22d3d22b3176d972f60dcdc3212ed8c92ef85065c"
+
+
+*/
