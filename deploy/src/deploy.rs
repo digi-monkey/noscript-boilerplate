@@ -1,5 +1,6 @@
 mod conf;
 
+extern crate types;
 use types::{FilterOptMode, NoscriptPayload, NOSCRIPT_KIND};
 
 use base64::{engine::general_purpose, Engine};
