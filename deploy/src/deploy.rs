@@ -1,5 +1,4 @@
 mod conf;
-mod types;
 
 use types::{FilterOptMode, NoscriptPayload, NOSCRIPT_KIND};
 
