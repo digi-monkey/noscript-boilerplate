@@ -1,2 +1,2 @@
 [workspace]
-members = ["script", "deploy", "types"]
+members = ["script",  "runtime", "deploy","types"]

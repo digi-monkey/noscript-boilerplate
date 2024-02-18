@@ -70,7 +70,7 @@ impl Event {
     }
 }
 
-pub const NOSCRIPT_KIND: i32 = 32042;
+pub const NOSCRIPT_KIND: i32 = 32043;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct NoscriptPayload {
@@ -80,26 +80,18 @@ pub struct NoscriptPayload {
     pub version: Option<String>,
     pub source_code: Option<String>, // source code url
     pub published_at: Option<i64>,   // timestamp, seconds
+    pub runtime_version: Option<String>
 }
 
-pub enum FilterOptMode {
-    global = 0,
-    follow = 1,
-    trust_network = 2, // follow's follow without spam
-    sign_in_user = 3,
-    visiting_user = 4,
-    custom = 5,
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct NoscriptContent {
+    pub wasm: String,
+    pub binding: String,
 }
 
-impl FilterOptMode {
-    pub fn to_string(&self) -> String {
-        match *self {
-            FilterOptMode::global => "0".to_string(),
-            FilterOptMode::follow => "1".to_string(),
-            FilterOptMode::trust_network => "2".to_string(),
-            FilterOptMode::sign_in_user => "3".to_string(),
-            FilterOptMode::visiting_user => "4".to_string(),
-            FilterOptMode::custom => "5".to_string(),
-        }
+impl ToString for NoscriptContent {
+    fn to_string(&self) -> String {
+        let serialized: String = serde_json::to_string(&self).unwrap();
+        serialized
     }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "script"
+name = "runtime"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,14 +8,10 @@ edition = "2021"
 [dependencies]
 js-sys = "0.3.64"
 wasm-bindgen = "0.2.87"
-types = { path = "../types" }
-runtime = { path = "../runtime" }
 wasm-bindgen-futures = "0.4.39"
 serde-wasm-bindgen = "0.6.3"
 #web-sys = {version = "0.3.66", features = ["console"]}
-
-[lib]
-crate-type = ["cdylib"]
+types = { path = "../types" }
 
 [profile.release]
 lto = true
